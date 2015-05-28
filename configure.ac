@@ -1067,10 +1067,10 @@ fi
 dnl ***************************************************************************
 dnl riak headers/libraries
 dnl ***************************************************************************
-if test "$enable_riak != "no"; then
+if test "$enable_riak" != "no"; then
  dnl PKG_CHECK_MODULES(RIAK_CLIENT, riak-client >= 0.0.0,,riak_found="no")
  riak_found="yes"
- if test "$riak_found" = "no" && test "$enable_riak = "yes"; then
+ if test "$riak_found" = "no" && test "$enable_riak" = "yes"; then
    AC_MSG_ERROR([Dependency for Riak not found!])
  fi
  if test "$riak_found" = "no"; then
