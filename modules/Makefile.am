@@ -23,6 +23,7 @@ include modules/redis/Makefile.am
 include modules/pseudofile/Makefile.am
 include modules/graphite/Makefile.am
 include modules/riemann/Makefile.am
+include modules/riak/Makefile.am
 include modules/systemd-journal/Makefile.am
 include modules/python/Makefile.am
 include modules/java/Makefile.am

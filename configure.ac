@@ -217,6 +217,10 @@ AC_ARG_ENABLE(riemann,
               [  --disable-riemann       Disable riemann destination]
               ,,enable_riemann="auto")
 
+AC_ARG_ENABLE(riak,
+              [  --disable-riak          Disable the Riak destination]
+              ,,enable_riak="auto")
+
 AC_ARG_WITH(compile-date,
 	      [  --without-compile-date  Do not include the compile date in the binary]
 	      ,wcmp_date="${withval}", wcmp_date="yes")
@@ -248,7 +252,7 @@ if test "x$enable_all_modules" != "xauto"; then
    state="$enable_all_modules"
 
    MODULES="spoof_source sun_streams sql pacct mongodb json amqp stomp \
-            redis systemd geoip riemann ipv6 smtp"
+            redis systemd geoip riemann riak ipv6 smtp"
    for mod in ${MODULES}; do
        modstate=$(eval echo \$enable_${mod})
        if test "x$modstate" = "xauto"; then
@@ -1061,6 +1065,22 @@ if test "$enable_riemann" != "no"; then
 fi
 
 dnl ***************************************************************************
+dnl riak headers/libraries
+dnl ***************************************************************************
+if test "$enable_riak != "no"; then
+ dnl PKG_CHECK_MODULES(RIAK_CLIENT, riak-client >= 0.0.0,,riak_found="no")
+ riak_found="yes"
+ if test "$riak_found" = "no" && test "$enable_riak = "yes"; then
+   AC_MSG_ERROR([Dependency for Riak not found!])
+ fi
+ if test "$riak_found" = "no"; then
+   enable_riak="no";
+ else
+   enable_riak="yes";
+ fi
+fi
+
+dnl ***************************************************************************
 dnl python checks
 dnl ***************************************************************************
 if test "x$with_python" != "xno"; then
@@ -1390,6 +1410,7 @@ AM_CONDITIONAL(JSON_INTERNAL, [test "x$JSON_SUBDIRS" != "x"])
 AM_CONDITIONAL(LIBMONGO_INTERNAL, [test "x$LIBMONGO_SUBDIRS" != "x"])
 AM_CONDITIONAL(LIBRABBITMQ_INTERNAL, [test "x$LIBRABBITMQ_SUBDIRS" != "x"])
 AM_CONDITIONAL(ENABLE_RIEMANN, [test "$enable_riemann" != "no"])
+AM_CONDITIONAL(ENABLE_RIAK, [test "$enable_riak != "no"])
 AM_CONDITIONAL(ENABLE_JOURNALD, [test "$with_systemd_journal" != "no"])
 AM_CONDITIONAL(ENABLE_PYTHON, [test "$enable_python" != "no"])
 AM_CONDITIONAL(ENABLE_JAVA, [test "$enable_java" = "yes"])
@@ -1497,5 +1518,6 @@ echo "  STOMP destination (module)  : ${enable_stomp:=no}"
 echo "  GEOIP support (module)      : ${enable_geoip:=no}"
 echo "  Redis support (module)      : ${enable_redis:=no}"
 echo "  Riemann destination (module): ${enable_riemann:=no}"
+echo "  Riak destination (module)   : ${enable_riak:=no}"
 echo "  python                      : ${enable_python:-yes} (${with_python})"
 echo "  java                        : ${enable_java:=no}"
