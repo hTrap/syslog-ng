@@ -193,7 +193,7 @@ riak_worker_insert(LogThrDestDriver *s, LogMessage *msg)
 
   //if (self->client->err)
     //return WORKER_INSERT_RESULT_ERROR;
-  printf("riak_worker_insert method is being used" ); //for debugging
+  printf("riak_worker_insert method is being used\n" ); //for debugging
 
   return WORKER_INSERT_RESULT_SUCCESS;
 }
