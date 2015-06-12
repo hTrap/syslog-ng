@@ -220,6 +220,10 @@ AC_ARG_ENABLE(riemann,
 AC_ARG_ENABLE(riak,
               [  --disable-riak          Disable the Riak destination]
               ,,enable_riak="auto")
+              
+AC_ARG_WITH(libriack,
+             AC_HELP_STRING([--with-libriack=DIR],
+                            [use libriack library from (prefix) directory DIR]),,)
 
 AC_ARG_WITH(compile-date,
 	      [  --without-compile-date  Do not include the compile date in the binary]
@@ -244,9 +248,11 @@ AC_ARG_ENABLE(manpages, AC_HELP_STRING([ --enable-manpages], [ Enable generation
 
 AC_ARG_ENABLE(java, [ --enable-java  Enable java destination (default: auto)],, enable_java="auto")
 
+
 AC_ARG_ENABLE(all-modules,
               [  --enable-all-modules    Forcibly enable all modules. (default: auto)]
               ,,enable_all_modules="auto")
+              
 
 if test "x$enable_all_modules" != "xauto"; then
    state="$enable_all_modules"
@@ -1005,6 +1011,35 @@ if test "x$enable_redis" != "xno" && test "x$with_redis" != "no"; then
        enable_redis=$hiredis
 fi
 
+
+dnl ***************************************************************************
+dnl libriack headers/libraries
+dnl ***************************************************************************
+if test "x$enable_riak" != "xno" && test "x$with_riak" != "no"; then
+       riack="yes"
+       if test "x$with_libraick" != "yes" && test "x$with_libriack" != "x"; then
+               CFLAGS_SAVE="$CFLAGS"
+               LDFLAGS_SAVE="$LDFLAGS"
+               CFLAGS="$CFLAGS -I$with_libriack/include"
+               LDFLAGS="$LDFLAGS -L$with_libriack/lib"
+               AC_CHECK_HEADER(raick/riack.h, [RIACK_CFLAGS="-I$with_libriack/include"
+                                                   RIACK_LIBS="-L$with_libriack/lib -lriack"], [raick=no])
+               CFLAGS="$CFLAGS_SAVE"
+               LDFLAGS="$LDFLAGS_SAVE"
+       else
+               riack="yes"
+               PKG_CHECK_MODULES(RIACK, riack, ,
+                                 [PKG_CHECK_MODULES(RIACK, libriack,,
+                                  [AC_CHECK_HEADER(riack/riack.h, [RIAK_LIBS="-lriack"], [riack=no])])])
+       fi
+
+       if test "x$enable_riak" = "xyes" && test "x$riack" = "xno"; then
+               AC_MSG_ERROR(libRIACK not found)
+       fi
+
+       enable_riak=$riack
+fi
+
 dnl ***************************************************************************
 dnl rabbitmq-c headers/libraries
 dnl ***************************************************************************
@@ -1410,7 +1445,7 @@ AM_CONDITIONAL(JSON_INTERNAL, [test "x$JSON_SUBDIRS" != "x"])
 AM_CONDITIONAL(LIBMONGO_INTERNAL, [test "x$LIBMONGO_SUBDIRS" != "x"])
 AM_CONDITIONAL(LIBRABBITMQ_INTERNAL, [test "x$LIBRABBITMQ_SUBDIRS" != "x"])
 AM_CONDITIONAL(ENABLE_RIEMANN, [test "$enable_riemann" != "no"])
-AM_CONDITIONAL(ENABLE_RIAK, [test "$enable_riak" != "no"])
+AM_CONDITIONAL(ENABLE_RIAK, [test "$enable_riak" = "yes"])
 AM_CONDITIONAL(ENABLE_JOURNALD, [test "$with_systemd_journal" != "no"])
 AM_CONDITIONAL(ENABLE_PYTHON, [test "$enable_python" != "no"])
 AM_CONDITIONAL(ENABLE_JAVA, [test "$enable_java" = "yes"])
