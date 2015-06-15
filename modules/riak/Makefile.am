@@ -3,6 +3,7 @@ module_LTLIBRARIES			+=	\
 	modules/riak/libriak.la
 
 modules_riak_libriak_la_CFLAGS		=	\
+    $(RIACK_CFLAGS)            \
 	-I$(top_srcdir)/modules/riak		\
 	-I$(top_builddir)/modules/riak
 modules_riak_libriak_la_SOURCES		=	\
