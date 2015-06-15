@@ -1017,20 +1017,20 @@ dnl libriack headers/libraries
 dnl ***************************************************************************
 if test "x$enable_riak" != "xno" && test "x$with_riak" != "no"; then
        riack="yes"
-       if test "x$with_libraick" != "yes" && test "x$with_libriack" != "x"; then
+       if test "x$with_libriack" != "yes" && test "x$with_libriack" != "x"; then
                CFLAGS_SAVE="$CFLAGS"
                LDFLAGS_SAVE="$LDFLAGS"
                CFLAGS="$CFLAGS -I$with_libriack/include"
                LDFLAGS="$LDFLAGS -L$with_libriack/lib"
-               AC_CHECK_HEADER(raick/riack.h, [RIACK_CFLAGS="-I$with_libriack/include"
-                                                   RIACK_LIBS="-L$with_libriack/lib -lriack"], [raick=no])
+               AC_CHECK_HEADER(riack/riack.h, [RIACK_CFLAGS="-I$with_libriack/include"
+                                               RIACK_LIBS="-L$with_libriack/lib -lriack"], [riack=no])
                CFLAGS="$CFLAGS_SAVE"
                LDFLAGS="$LDFLAGS_SAVE"
        else
                riack="yes"
                PKG_CHECK_MODULES(RIACK, riack, ,
                                  [PKG_CHECK_MODULES(RIACK, libriack,,
-                                  [AC_CHECK_HEADER(riack/riack.h, [RIAK_LIBS="-lriack"], [riack=no])])])
+                                  [AC_CHECK_HEADER(riack/riack.h, [RIACK_LIBS="-lriack"], [riack=no])])])
        fi
 
        if test "x$enable_riak" = "xyes" && test "x$riack" = "xno"; then
