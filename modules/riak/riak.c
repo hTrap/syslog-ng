@@ -217,6 +217,7 @@ riak_worker_insert(LogThrDestDriver *s, LogMessage *msg)
   GString *value_res = g_string_sized_new(1024);
   riack_put_req_t *putreq;
   riack_content_t *content;
+  riack_message_t *message;
   int scheck;
   
   if (!riak_dd_connect(self, TRUE))
@@ -251,7 +252,9 @@ riak_worker_insert(LogThrDestDriver *s, LogMessage *msg)
                          RIACK_REQ_PUT_FIELD_CONTENT, content,
                          RIACK_REQ_PUT_FIELD_NONE);
                          
-  if ((scheck = riack_client_send(self->client, RIACK_MESSAGE_PUTREQ, putreq)) == 0) {
+  message = riack_putreq_serialize(putreq);
+                         
+  if ((scheck = riack_client_send(self->client, message)) == 0) {
     if ((scheck = riack_client_recv(self->client)) == 0) {
             msg_debug("RIAK bucket sent",
                 evt_tag_str("driver", self->super.super.super.id),
