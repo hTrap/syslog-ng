@@ -336,7 +336,7 @@ riak_worker_insert(LogThrDestDriver *s, LogMessage *msg)
           g_string_free(value_res, TRUE);
           g_string_free(bucket_res, TRUE);
           g_string_free(key_res, TRUE);
-          riak_req_put_free(putreq);
+          riack_req_put_free(putreq);
           return WORKER_INSERT_RESULT_SUCCESS;
         }
     else 
